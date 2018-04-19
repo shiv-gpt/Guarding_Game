@@ -43,7 +43,7 @@ class Polygon:
 			return False
 
 	def Between(self, a, b, p):
-		if(!Collinear(a,b,p)):
+		if Collinear(a,b,p) is not True:
 			return False
 		if(a.x != b.x):
 			return ((a.x<=p.x) and (p.x<=b.x)) or ((a.x>=p.x) and (p.x>=b.x))
@@ -62,13 +62,13 @@ class Polygon:
 		return Xor(Left(a,b,p1), Left(a,b,p2)) and Xor(Left(p1,p2,a), Left(p1,p2,b))
 
 	def Xor(self, x, y):
-		return !x ^ !y
+		return ~x ^ ~y
 
 	def Left(self, a, b, p):
 		return Area2(a,b,p)>0
 
 	def InCone(selft, a, b):
-		
+
 
 
 
