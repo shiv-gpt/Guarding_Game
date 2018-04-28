@@ -4,12 +4,18 @@ class Point:
 	pNum = 0
 	isGuard = False
 	isGuardPoint = False
+	pointObject = None
 	def init(self, x, y, pNum):
 		self.x = x
 		self.y = y
 		self.pNum = pNum
 	def setGuardFlag(self):
 		self.isGuard = True
+
+class Line:
+	point1 = None
+	point2 = None
+	lineObject = None
 
 class Polygon:
 	points = []
@@ -21,16 +27,35 @@ class Polygon:
 		self.nPoints = len(points)
 
 	def getNextPoint(self, p):
-		if(p.pNum == self.nPoints - 1):
+		# if(p.pNum == self.nPoints - 1):
+		# 	return self.points[0]
+		# else:
+		# 	return self.points[p.pNum+1]
+		j = -1
+		for i in range(len(self.points)):
+			if self.points[i].pNum == p.pNum:
+				j = i
+		assert j != -1
+		if j == len(self.points) - 1:
 			return self.points[0]
-		else:
-			return self.points[p.pNum+1]
+		else: return self.points[j+1]
+
+
+
 
 	def getPrevPoint(self, p):
-		if(p.pNum == 0):
-			return self.points[self.nPoints-1]
-		else:
-			return self.points[p.pNum-1]
+		# if(p.pNum == 0):
+		# 	return self.points[self.nPoints-1]
+		# else:
+		# 	return self.points[p.pNum-1]
+		j = -1
+		for i in range(len(self.points)):
+			if self.points[i].pNum == p.pNum:
+				j = i
+		assert j != -1
+		if j == 0:
+			return self.points[len(self.points) - 1]
+		else: return self.points[j-1]
 
 	def Diagonalie(self, a, b):
 		# c = Point()
@@ -68,6 +93,7 @@ class Polygon:
 		return self.Area2(a,b,p)==0
 
 	def Area2(self, a, b, p):
+		print(a.x)
 		return (b.x - a.x)*(p.y - a.y) - (p.x - a.x)*(b.y - a.y)
 
 	def IntersectProp(self, a, b, p1, p2):
@@ -94,18 +120,53 @@ class Polygon:
 		if (self.LeftOn(a,a1,a0)):
 			return self.Left(a,b,a0) and self.Left(b,a,a1)
 		else:
-			return ~(self.LeftOn(a,b,a1) and self.LeftOn(b,a,a0))
+			return not(self.LeftOn(a,b,a1) and self.LeftOn(b,a,a0))
 
 	def Diagonal(self,a,b):
-		return self.InCone(a,b) and InCone(b,a) and self.Diagonalie(a,b)
+		print("a coordinates = ")
+		print("X = "+str(a.x)+" Y = "+str(a.y))
+		print("b coordinates = ")
+		print("X = "+str(b.x)+" Y = "+str(b.y))
+		return self.InCone(a,b) and self.InCone(b,a) and self.Diagonalie(a,b)
+
+	def getIndex(self, p):
+		j = -1
+		for i in range(len(self.points)):
+			if self.points[i].pNum == p.pNum:
+				j = i
+		assert j != -1
+		return j
 
 	def isGuarded(self):
-		flags = [0 if p.isGuard is not True else 1 for p in self.points]
+		flags = [0 for p in self.points]
+		print("#############################")
+		for p in self.points:
+			print("p coordinates = ")
+			print("X = "+str(p.x)+" Y = "+str(p.y))
+			if p.isGuard == True:
+				flags[p.pNum] = 1
+		print("#############################")
+		# flags = [0 if p.isGuard is not True else 1 for p in self.points]
+		print(flags)
+		print("")
+		print("")
+		print("")
 		for g in self.guards:
 			for p in self.points:
-				if not p.isGuard:
-					if self.Diagonal(g,p):
-						flags[p.pNum] = 1
+				if p.isGuard == False:
+					if self.Diagonal(g,p) == True:
+						j = self.getIndex(p)
+						# p.isGuard = True
+						flags[j] = 1
+						# flags[p.pNum] = 1
+		for g in self.guards:
+			p1 = self.getNextPoint(g)
+			p2 = self.getPrevPoint(g)
+			j1 = self.getIndex(p1)
+			j2 = self.getIndex(p2)
+			flags[j1] = 1
+			flags[j2] = 1
+		print(flags)
 		if 0 in flags:
 			return False
 		else: return True
