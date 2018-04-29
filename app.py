@@ -179,6 +179,9 @@ class GuardingGame(Tk):
 	def buildPolygonButtonCallback(self):
 		self.polygonPoints = self.polygonPoints[:-1]
 		self.polygon.points = self.polygonPoints
+		print("Polygon Coordinates======")
+		for p in self.polygon.points:
+			print("X = "+str(p.x)+" Y = "+str(p.y))
 		self.polygon.guards = self.guards
 		for g in self.polygon.guards:
 			for p in self.polygon.points:
