@@ -21,6 +21,7 @@ class Polygon:
 	points = []
 	guards = []
 	nPoints = 0
+	flags = []
 	def init(self, points):
 		for p in points:
 			self.points.append(p)
@@ -182,6 +183,7 @@ class Polygon:
 			flags[j1] = 1
 			flags[j2] = 1
 		print(flags)
+		self.flags = flags
 		if 0 in flags:
 			return False
 		else: return True

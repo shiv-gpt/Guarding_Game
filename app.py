@@ -116,8 +116,8 @@ class GuardingGame(Tk):
 			if p is not None:
 				self.guards.append(p)
 				self.canvas.itemconfigure(p.pointObject, fill='red')
-			if p1 is not None:
-				self.canvas1.itemconfigure(p1.pointObject, fill='red')
+			# if p1 is not None:
+			# 	self.canvas1.itemconfigure(p1.pointObject, fill='red')
 		# self.canvas.itemconfigure(p, fill='black')
 		# points.append(event.x)
 		# points.append(event.y)
@@ -132,7 +132,7 @@ class GuardingGame(Tk):
 					self.markPoint1 = p
 				else:
 					# self.make_line(p, markPoint1)
-					l1 = self.canvas1.create_line(p.x, p.y, self.markPoint1.x, self.markPoint1.y, fill="red")
+					l1 = self.canvas1.create_line(p.x, p.y, self.markPoint1.x, self.markPoint1.y, fill="red", width=2)
 					self.lines.append(l1)
 					self.markPoint1 = p
 				self.polygonPoints.append(p)
@@ -191,6 +191,13 @@ class GuardingGame(Tk):
 			# print("Guarder Wins!")
 			self.resultLabel.config(text="GUARDER WINS!")
 		else: self.resultLabel.config(text="POLYGONISER WINS!")
+		for i in range(len(self.polygon.points)):
+			if self.polygon.flags[i]==1:
+				self.canvas1.itemconfigure(self.polygon.points[i].pointObject, fill='yellow')
+		for g in self.guards:
+			p = p1 = self.getPoint(g.x, g.y, self.points1)
+			if p1 is not None:
+				self.canvas1.itemconfigure(p1.pointObject, fill='red')
 			# print("Polygoniser wins")
 
 	def clearCanvas(self):
