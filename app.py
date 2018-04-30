@@ -1,48 +1,8 @@
 from Tkinter import *
 import random
 from utils import *
-
-
-class SuperVisor:
-	polygon = Polygon()
-	isMarked = False
-	def AddPoint(self, x, y):
-		P = Point()
-		P.x = x
-		P.y = y
-		P.pNum = len(self.polygon.points)
-		self.polygon.points.append(P)
-	# def generateRandomPoints(self, width, height):
-
-
-
-class Guarder:
-	polygon = Polygon()
-	guardPointNumber = 0
-	def setGuardPointNumber(self, x):
-		self.guardPointNumber = x
-
-	def copyFromSuperVisor(self, S):
-		self.polygon.points = S.polygon.points
-		self.polygon.guards = S.polygon.guards
-		self.polygon.nPoints = S.polygon.nPoints
-
-	def getPoint(self, x, y):
-		for p in self.polygon.points:
-			if x >= (p.x - 5) and x <= (p.x + 5):
-				return p
-		return None
-
-	def markGuardPoint(self, p):
-		if p is not None and p.isGuardPoint is False:
-			p.isGuardPoint = True
-			self.polygon.guards.append(p)
-
-class Polygoniser:
-	polygon = Polygon()
-	# def 
-
-
+import tkFont
+import math
 
 class GuardingGame(Tk):
 	polygon = Polygon()
@@ -79,15 +39,41 @@ class GuardingGame(Tk):
 		self.buttonToolBarFrame = Frame(self.root, bd=0, bg="black")
 		self.buttonToolBarFrame.grid(row=1, columnspan=2, sticky="nsew")
 
-		self.markPointsButton = Button(self.buttonToolBarFrame, text="Generate Points", command=self.markPointsButtonCallback)
-		self.markPointsButton.place(x=50, y=70)
+		# self.loadImage = PhotoImage(file="123.png")
+		helv36 = tkFont.Font(family='Helvetica', size=30, weight=tkFont.BOLD)
+		self.markPointsButton = Button(self.buttonToolBarFrame, text="Points Generated", command=self.markPointsButtonCallback, activebackground="green", bg="white", font=helv36)
+		# self.markPointsButton = Button(self.buttonToolBarFrame, command=self.markPointsButtonCallback, image=self.loadImage, width="200", height="70", bg ="black", bd=0)
+		# self.markPointsButton.config(width=200,height=100)
+		self.markPointsButton.place(x=100, y=150)
 
-		self.setGuardsButton = Button(self.buttonToolBarFrame, text="Finalise Guards", command=self.setGuardsButtonCallback)
-		self.setGuardsButton.place(x=300, y=70)
+		self.setGuardsButton = Button(self.buttonToolBarFrame, text="Guards Finalised", command=self.setGuardsButtonCallback, activebackground="green", bg="white",font=helv36)
+		self.setGuardsButton.place(x=600, y=150)
 
-		self.buildPolygonButton = Button(self.buttonToolBarFrame, text="Build Polygon", command=self.buildPolygonButtonCallback)
-		self.buildPolygonButton.place(x=550, y=70)
+		self.buildPolygonButton = Button(self.buttonToolBarFrame, text="Build Polygon", command=self.buildPolygonButtonCallback, activebackground="green", bg="white", font=helv36)
+		self.buildPolygonButton.place(x=1080, y=150)
 
+		self.ResetButton = Button(self.buttonToolBarFrame, text="Reset Game", command=self.resetButtonCallback, activebackground="green", bg="white", font=helv36)
+		self.ResetButton.place(x=1500, y=150)
+
+		self.titleLabel = Label(self.buttonToolBarFrame, text="GUARDING GAME!", font="System 40 bold underline", fg="black", bg="green")
+		self.titleLabel.place(x=700, y = 20)
+
+		self.guarderLabel = Label(self.buttonToolBarFrame, text="Guarder", font="System 20 bold", fg="green", bg="black")
+		self.guarderLabel.place(x=280, y=20)
+
+		self.polygoniserLabel = Label(self.buttonToolBarFrame, text="Polygoniser", font="System 20 bold", fg="green", bg="black")
+		self.polygoniserLabel.place(x=1440, y=20)
+
+		self.resultLabel = Label(self.buttonToolBarFrame, font="System 40 bold", fg="red", bg="black")
+		self.resultLabel.place(x=700, y = 300)
+
+		self.numPointsLabel = Label(self.buttonToolBarFrame, font="System 18 bold", fg="green", bg="black")
+		self.numPointsLabel.config(text = "# Points = ")
+		self.numPointsLabel.place(x=190,y=230)
+
+		self.numGuardsLabel = Label(self.buttonToolBarFrame, font="System 18 bold", fg="green", bg="black")
+		self.numGuardsLabel.config(text = "Max # Guards = ")
+		self.numGuardsLabel.place(x=670,y=230)
 		# self.buttonToolBarFrame.grid(row=1, column=1, sticky="nsew")
 
 		self.root.grid_columnconfigure(0, weight=1, uniform="group1")
@@ -95,8 +81,8 @@ class GuardingGame(Tk):
 		self.root.grid_rowconfigure(0, weight=1)
 		self.root.grid_rowconfigure(1, weight=1)
 
-		G = Guarder()
-		P = Polygoniser()
+		# G = Guarder()
+		# P = Polygoniser()
 		
 
 	def point(self, event):
@@ -121,12 +107,17 @@ class GuardingGame(Tk):
 			p1.isGuardPoint = False
 			p1.pointObject = o1
 			self.points1.append(p1)
+			self.numPointsLabel.config(text = "# Points = " + str(len(self.points)))
+			self.numGuardsLabel.config(text = "Max # Guards = " + str(int(math.floor(len(self.points)/3))))
 		elif (self.isGuardpointsMarked==False):
 			p = self.getPoint(event.x, event.y, self.points)
+			p1 = self.getPoint(event.x, event.y, self.points1)
 			print("Guard X = "+str(p.x)+" Guard Y = "+str(p.y))
 			if p is not None:
 				self.guards.append(p)
 				self.canvas.itemconfigure(p.pointObject, fill='red')
+			if p1 is not None:
+				self.canvas1.itemconfigure(p1.pointObject, fill='red')
 		# self.canvas.itemconfigure(p, fill='black')
 		# points.append(event.x)
 		# points.append(event.y)
@@ -142,6 +133,7 @@ class GuardingGame(Tk):
 				else:
 					# self.make_line(p, markPoint1)
 					l1 = self.canvas1.create_line(p.x, p.y, self.markPoint1.x, self.markPoint1.y, fill="red")
+					self.lines.append(l1)
 					self.markPoint1 = p
 				self.polygonPoints.append(p)
 		# self.canvas1.create_oval(event.x, event.y, event.x+1, event.y+1, fill="red", width="10.0")
@@ -168,15 +160,18 @@ class GuardingGame(Tk):
 
 	def markPointsButtonCallback(self):
 		self.isPointsGenerated = True
+		self.markPointsButton.config(bg="green")
 		for p in self.points:
 			print("X = "+str(p.x)+" Y = "+str(p.y))
 
 	def setGuardsButtonCallback(self):
 		self.isGuardpointsMarked = True
+		self.setGuardsButton.config(bg="green")
 		for p in self.guards:
 			print("X = "+str(p.x)+" Y = "+str(p.y))
 
 	def buildPolygonButtonCallback(self):
+		self.buildPolygonButton.config(bg="green")
 		self.polygonPoints = self.polygonPoints[:-1]
 		self.polygon.points = self.polygonPoints
 		print("Polygon Coordinates======")
@@ -193,27 +188,41 @@ class GuardingGame(Tk):
 			if p.pNum == True:
 				print("X = "+str(p.x)+" Y = "+str(p.y)) 
 		if(self.polygon.isGuarded()==True):
-			print("Guarder Wins!")
-		else: print("Polygoniser wins")
-			# def check_lin)e()
+			# print("Guarder Wins!")
+			self.resultLabel.config(text="GUARDER WINS!")
+		else: self.resultLabel.config(text="POLYGONISER WINS!")
+			# print("Polygoniser wins")
 
+	def clearCanvas(self):
+		for i in range(len(self.points)):
+			self.canvas.delete(self.points[i].pointObject)
+			self.canvas1.delete(self.points1[i].pointObject)
+		for l in self.lines:
+			self.canvas1.delete(l)
 
-
-
-
-		# self.root = tk.Tk(6666666666666666666666666)
-		# self.root.title("Guarding Game!")
-		# self.root.resizable(900,900)
-		# self.canvas1 = tk.Canvas(self.root, width = 300, height=300)
-		# self.canvas1.configure(cursor="crosshair")
-		# self.canvas1.pack()
-		# self.canvas1.bind()
-		# self.root.mainloop()
+	def resetButtonCallback(self):
+		self.clearCanvas()
+		self.polygon = Polygon()
+		self.isPointsGenerated = False
+		self.isGuardpointsMarked = False
+		self.points = []
+		self.points1 = []
+		self.guards = []
+		self.lines = []
+		self.polygonPoints = []
+		self.markPoint1 = None
+		self.markPointsButton.config(bg="white")
+		self.setGuardsButton.config(bg="white")
+		self.buildPolygonButton.config(bg="white")
+		self.resultLabel.config(text="")
+		self.numGuardsLabel.config(text = "Max # Guards = ")
+		self.numPointsLabel.config(text = "# Points = ")
+		
 
 if __name__ == '__main__':
 	g = GuardingGame()
 	g.root.title("Guarding Game!")
 	g.root.mainloop()
-	x, y = g.getCanvasSize()
-	print(x)
-	print(y)
+	# x, y = g.getCanvasSize()
+	# print(x)
+	# print(y)
